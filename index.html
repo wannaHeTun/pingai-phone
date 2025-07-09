@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hello im pinggai</title>
+    <style>
+        /* 基础重置 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f5ff;
+            color: #333;
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        /* 欢迎提示层 - 移动端优化 */
+        #welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        #welcome-content {
+            width: 100%;
+            max-width: 95%;
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #welcome-content h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        #welcome-content p,
+        #welcome-content h3,
+        #welcome-content h4 {
+            font-size: 16px;
+            margin: 8px 0;
+            line-height: 1.4;
+        }
+
+        #enter-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #4ECDC4, #6B5B95);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 80%;
+            max-width: 200px;
+        }
+
+        #enter-btn:disabled {
+            background: #cccccc;
+            color: #666666;
+        }
+
+        /* 主内容 - 移动端优化 */
+        #main-content {
+            display: none;
+            width: 100%;
+            padding: 10px;
+        }
+
+        /* 个人卡片 - 移动端优化 - 减少25% */
+        .balance-card {
+            background: rgba(44, 44, 52, 0.9);
+            border-radius: 15px;
+            padding: 15px;
+            color: #fff;
+            margin-bottom: 15px;
+            width: 75%; /* 减少25% */
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .balance-card h3 {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .balance-card img {
+            width: 100px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.2);
+            display: block;
+            margin: 0 auto 15px;
+        }
+
+        .balance-card p {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .balance-card ul {
+            list-style: none;
+            margin-bottom: 15px;
+        }
+
+        .balance-card li {
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .balance-card a {
+            color: #4ECDC4;
+            text-decoration: none;
+        }
+
+        /* 社交媒体 - 移动端优化 */
+        .social-icons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .social-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+        }
+
+        /* 毛玻璃面板 - 移动端优化 - 减小15% */
+        .frosted-glass {
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            width: 85%; /* 减少15% */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .frosted-glass h1 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .frosted-glass p {
+            font-size: 14px;
+        }
+
+        /* 聊天框 - 移动端优化 - 减小尺寸 */
+        .chat-container {
+            width: 100%;
+        }
+
+        .chat-messages {
+            height: 150px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .message {
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            max-width: 80%;
+            font-size: 13px;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background-color: rgba(78, 205, 196, 0.3);
+            margin-left: auto;
+        }
+
+        .ai-message {
+            background-color: rgba(255, 255, 255, 0.3);
+            margin-right: auto;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 8px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 25px;
+            background-color: rgba(255, 255, 255, 0.3);
+            outline: none;
+            font-size: 13px;
+        }
+
+        .fasong {
+            padding: 0 12px;
+            background: #016DD9;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* 按钮 - 移动端优化 - 减小尺寸 */
+        .magic-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background: linear-gradient(45deg, #4ECDC4, #6B5B95);
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        /* 底部 - 移动端优化 */
+        footer {
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            text-align: center;
+            padding: 12px 10px;
+            font-size: 12px;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        footer h6 {
+            margin: 4px 0;
+            font-size: 12px;
+        }
+
+        footer a {
+            color: #4ECDC4;
+            font-size: 12px;
+        }
+
+        /* 弹窗系统 - 移动端优化 */
+        .custom-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 1000;
+            padding: 15px;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .custom-panel.active {
+            transform: translateY(0);
+        }
+
+        .close-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 35px;
+            height: 35px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        #panelContent {
+            margin-top: 25px;
+        }
+
+        #panelContent h2 {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        #panelContent h3 {
+            font-size: 16px;
+            margin: 12px 0 8px;
+        }
+
+        .scrollable-panel {
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .update-item {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        /* 侧边按钮 - 移动端改为底部固定 */
+        .side-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(0,0,0,0.8);
+            z-index: 100;
+        }
+
+        .side-btn {
+            padding: 8px 16px;
+            background: linear-gradient(45deg, #6B5B95, #4ECDC4);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 13px;
+            flex: 1;
+            max-width: 140px;
+        }
+
+        /* 移除不适合移动端的复杂效果 */
+        .bubble, .balance-card::before {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 欢迎提示层 -->
+    <div id="welcome-overlay">
+        <div id="welcome-content">
+            <h2>欢迎来到瓶盖的小介绍</h2>
+            <p>这是一个热爱创造的初中生的个人空间</p>
+            <div style="text-align:center;margin-top:15px">
+                <h3>版权声明</h3>
+                <h4>本网站为个人开发项目，核心功能基于Deepseek R1构建（代码占比约98%）</h4>
+                <h4>背景是随机生成的与本人没有任何关系</h4>
+                <h4>统计信息：</h4>
+                <h3>总代码行数：800余行（不含本声明）</h3>
+                <h3>开发性质：非商业 为个人项目</h3>
+                <h4>使用条款：</h4>
+                <h3>严禁任何形式的网络爬虫抓取行为</h3>
+                <h3>禁止未经授权的源码复制、分发或商业用途</h3>
+                <h3>保留追究侵权责任的法律权利</h3>
+            </div>
+
+            <!-- 同意条款复选框 -->
+            <div style="margin:15px 0">
+                <input type="checkbox" id="agree-terms" style="transform:scale(1.2);margin-right:5px;vertical-align:middle">
+                <label for="agree-terms" style="font-size:16px;vertical-align:middle">我已阅读并同意上述使用条款</label>
+            </div>
+
+            <p style="font-size:16px;opacity:0.8;margin:5px 0">点击下方按钮进入探索(请先勾选同意条款)</p>
+            <button id="enter-btn" disabled style="background-color: #cccccc; color: #666666;">进入主页面</button>
+        </div>
+    </div>
+
+    <!-- 主内容容器 -->
+    <div id="main-content">
+        <div class="main-container">
+            <!-- 左边栏 - 个人面板 -->
+            <div class="left-column">
+                <div class="balance-card">
+                    <div style="text-align: center">
+                        <h3>「魂拧瓶盖」：BottleCap</h3>
+                        <img src="https://i.postimg.cc/440Swrfs/b-b4dad031b6564c3d7901fc4ed88e8140-1.jpg" alt="头像">
+                    </div>
+
+                    <div style="margin-bottom: 10px;">
+                        <img src="https://i.postimg.cc/tJDPv0Py/QQ20250630-201959.png" style="width:40%;border-radius:8px;margin-bottom:10px;" alt="项目图片">
+                        <p><strong>你好！我是瓶盖，一个热爱创造的初中生。</strong></p>
+                    </div>
+
+                    <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                        <div style="flex: 1; min-width: 150px;">
+                            <h4>// 基础信息</h4>
+                            <ul>
+                                <li>-> 年龄: 14</li>
+                                <li>-> 邮箱: <a href="mailto:1104551162@qq.com">1104551162@qq.com</a></li>
+                                <li>-> 城市: 河北 保定</li>
+                            </ul>
+                        </div>
+
+                        <div style="flex: 1; min-width: 150px;">
+                            <h4>// 社交媒体</h4>
+                            <div class="social-icons">
+                                <!-- B站 -->
+                                <div class="social-item">
+                                    <a href="https://space.bilibili.com/3493103998601430" target="_blank" rel="noopener noreferrer" class="social-icon bilibili" style="background: rgba(251,114,153,0.2);">
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="#fb7299">
+                                            <path d="M18.223 3.086a1.25 1.25 0 0 1 0 1.768L17.08 5.996l1.143 1.143a1.25 1.25 0 0 1-1.768 1.768l-1.143-1.143-1.143 1.143a1.25 1.25 0 1 1-1.768-1.768l1.143-1.143-1.143-1.143a1.25 1.25 0 0 1 1.768-1.768l1.143 1.143 1.143-1.143a1.25 1.25 0 0 1 1.768 0zM12 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0zm-1.5 0a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0z"/>
+                                        </svg>
+                                    </a>
+                                    <p>@Bilibili</p>
+                                </div>
+
+                                <!-- 抖音 -->
+                                <div class="social-item">
+                                    <a href="https://www.douyin.com/user/MS4wLjABAAAAYiQArjjzsrmIHEwfR0odRw5cA3__DeUEzHdkmjHaUJUOADIcHF4mkRHl5dEdCK9W" target="_blank" rel="noopener noreferrer" class="social-icon douyin" style="background: rgba(0,242,188,0.2);">
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="#00f2bc">
+                                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 0 15.63a6.34 6.34 0 0 0 11.58 3.49h.06a6.31 6.31 0 0 0 3.05-4.98v-7a4.85 4.85 0 0 0 4.83-4.84c0-.26 0-.5-.04-.75l.04-.01-.01-.02z"/>
+                                        </svg>
+                                    </a>
+                                    <p>@抖音</p>
+                                </div>
+
+                                <!-- 快手 -->
+                                <div class="social-item">
+                                    <a href="https://www.kuaishou.com/profile/3xjmeuawpg37hji" target="_blank" rel="noopener noreferrer" class="social-icon kuaishou" style="background: rgba(255,195,0,0.2);">
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="#ffc300">
+                                            <path d="M10.33 5.02a10.11 10.11 0 0 1 10.98-1.98 1.5 1.5 0 0 0 .17-2.99A13.11 13.11 0 0 0 8.35 4.05a1.5 1.5 0 0 0 1.98.97zm-8.3 7.45a1.5 1.5 0 0 0-1.06 2.56 13.11 13.11 0 0 0 15.08 1.37a1.5 1.5 0 1 0-1.6-2.56 10.11 10.11 0 0 1-11.64-1.06 1.5 1.5 0 0 0-1.78-.31zm15.05 4.55a1.5 1.5 0 0 0 1.77 2.39 13.11 13.11 0 0 0 3.65-14.1 1.5 1.5 0 1 0-2.77 1.1 10.11 10.11 0 0 1-2.65 10.61z"/>
+                                        </svg>
+                                    </a>
+                                    <p>@快手</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <h4>// 当前项目</h4>
+                        <div style="display: flex; gap: 10px; overflow-x: auto; padding: 10px 0;">
+                            <img src="https://placeholder.pics/svg/150x100/DEDEDE/555555/学习研究" style="border-radius:6px;height:80px;" alt="学习研究项目">
+                            <img src="https://placeholder.pics/svg/150x100/DEDEDE/555555/网站开发" style="border-radius:6px;height:80px;" alt="网站开发项目">
+                            <img src="https://placeholder.pics/svg/150x100/DEDEDE/555555/神秘计划" style="border-radius:6px;height:80px;" alt="神秘项目">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右边栏 - 其他内容 (减小尺寸) -->
+            <div class="right-column">
+                <!-- 欢迎面板 - 减小尺寸 -->
+                <div class="frosted-glass">
+                    <div style="text-align: right">
+                        <img src="https://i.postimg.cc/kXcwzz92/QQ20250504-081044.png" alt="河豚logo" style="width:60px;height:60px;">
+                    </div>
+                    <h1 style="font-size: 18px; margin-bottom: 8px;">欢迎来到瓶盖介绍</h1>
+                    <p style="font-size: 14px;">神秘的瓶盖Postcard将显现于此</p>
+                </div>
+
+                <!-- 聊天框 - 减小尺寸 -->
+                <div class="frosted-glass" style="text-align: center;">
+                    <div class="chat-container">
+                        <h2 style="font-size: 18px;">本地问答助手</h2>
+                        <div class="chat-messages" id="chatMessages" style="height: 150px;">
+                            <div class="message ai-message">你好！我是本地问答助手，可以回答预设问题。</div>
+                        </div>
+                        <div class="input-area">
+                            <input type="text" id="userInput" placeholder="输入你的问题..." autocomplete="off" style="padding: 8px 12px; font-size: 13px;">
+                            <button id="sendButton" class="fasong" style="padding: 0 12px; font-size: 13px;">发送</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 底部内容 - 减小尺寸 -->
+                <div class="frosted-glass" style="text-align: center;">
+                    <h1 style="font-size: 18px;">-----瓶盖的网站-----</h1>
+                    <h6 style="font-size: 12px;">其中如有任何问题请投稿@1104551162@qq.com</h6>
+                    <a href="https://www.bilibili.com/video/av546403908/?vd_source=82f6b931951efae34e0b52914ce2f362" class="magic-btn" target="_blank" rel="noopener noreferrer" style="padding: 8px 16px; font-size: 13px;">领取地狱火</a>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <h6>@2025 魂拧瓶盖 | @2025 亿口河豚</h6>
+            <h6>改网站大部分运用了DeepSeek R1 本人技术实际才刚刚入门</h6>
+            <h6>本项目是河豚网站的分支主网站请看 <a href="https://wannahetun.github.io/hetun/" target="_blank" rel="noopener noreferrer">https://wannahetun.github.io/hetun/</a></h6>
+            <a href="https://www.deepseek.com/" target="_blank" rel="noopener noreferrer">DeepSeek</a>
+        </footer>
+
+        <!-- 侧边按钮 - 移动端改为底部固定 -->
+        <div class="side-buttons">
+            <button class="side-btn" id="projectsBtn">我的项目</button>
+            <button class="side-btn" id="updateBtn">更新日期</button>
+        </div>
+
+        <!-- 弹窗系统 -->
+        <div class="custom-panel" id="customPanel">
+            <button class="close-panel" id="closePanel">×</button>
+            <div id="panelContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // 关闭欢迎提示层并显示主内容
+        document.getElementById('enter-btn').addEventListener('click', function() {
+            const overlay = document.getElementById('welcome-overlay');
+            overlay.style.opacity = '0';
+
+            setTimeout(function() {
+                overlay.style.display = 'none';
+                const mainContent = document.getElementById('main-content');
+                mainContent.style.display = 'block';
+                setTimeout(() => {
+                    mainContent.style.opacity = '1';
+                }, 10);
+                document.dispatchEvent(new Event('DOMContentLoaded'));
+            }, 500);
+        });
+
+        // 同意条款复选框
+        const agreeCheckbox = document.getElementById('agree-terms');
+        const enterBtn = document.getElementById('enter-btn');
+
+        agreeCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                enterBtn.disabled = false;
+                enterBtn.style.background = 'linear-gradient(45deg, #4ECDC4, #6B5B95)';
+                enterBtn.style.color = 'white';
+            } else {
+                enterBtn.disabled = true;
+                enterBtn.style.background = '#cccccc';
+                enterBtn.style.color = '#666666';
+            }
+        });
+
+        // 等待DOM加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化弹窗系统
+            initPanelSystem();
+
+            // 计算并更新年龄
+            updateAgeDisplay();
+
+            // 初始化聊天功能
+            initChat();
+        });
+
+        /**
+         * 初始化弹窗系统
+         */
+        function initPanelSystem() {
+            const projectsBtn = document.getElementById('projectsBtn');
+            const updateBtn = document.getElementById('updateBtn');
+            const closePanel = document.getElementById('closePanel');
+            const customPanel = document.getElementById('customPanel');
+            const panelContent = document.getElementById('panelContent');
+
+            // 我的项目内容
+            const projectsContent = `
+                <h2>我的项目</h2>
+                <div style="margin-top: 15px;">
+                    <h3 style="font-size: 16px;">无敌的Python文件</h3>
+                    <a href="https://pan.xunlei.com/s/VOTzTyH7ok85AceFHEIilMa-A1?pwd=4zen#" target="_blank" rel="noopener noreferrer">这是一个全部由瓶盖编写的Python文件合集</a>
+
+                    <h3 style="margin-top: 12px; font-size: 16px;">瓶盖的学习资料</h3>
+                    <a href="https://pan.xunlei.com/s/VOTzVPoLECKEamUcJgPBlgolA1?pwd=u6zt" target="_blank" rel="noopener noreferrer">学习资料嘿嘿嘿</a>
+
+                    <h3 style="margin-top: 12px; font-size: 16px;">未完待续</h3>
+                    <p>下次相见将是不一样的我</p>
+                </div>
+            `;
+
+            // 更新日期内容
+            const updateContent = `
+                <h2>更新记录</h2>
+                <div class="scrollable-panel">
+                    <div class="update-item">
+                        <h3 style="margin-top: 12px; font-size: 16px;">2025年7月9日</h3>
+                        <ul>
+                            <li>加入了进入声明</li>
+                            <li>增加了本地对话词汇量</li>
+                            <li>微调布局</li>
+                        </ul>
+                    </div>
+
+                    <div class="update-item">
+                        <h3 style="font-size: 16px;">2025年7月5日</h3>
+                        <ul>
+                            <li>整体布局改变</li>
+                            <li>加入了本地对话项目</li>
+                            <li>继续优化</li>
+                        </ul>
+                    </div>
+
+                    <div class="update-item">
+                        <h3 style="font-size: 16px;">2025年6月30日</h3>
+                        <ul>
+                            <li>网站正式开放</li>
+                            <li>运用Deepseek进行了优化</li>
+                            <li>初步加入了我的项目</li>
+                        </ul>
+                    </div>
+
+                    <div class="update-item">
+                        <h3 style="margin-top: 12px; font-size: 16px;">2025年6月29日</h3>
+                        <ul>
+                            <li>完成网站基础框架搭建</li>
+                            <li>确定了主体</li>
+                            <li>自行优化</li>
+                        </ul>
+                    </div>
+
+                    <div class="update-item">
+                        <h3 style="font-size: 16px;">2025年6月28日</h3>
+                        <ul>
+                            <li>在学习Python爬虫中发现了html技术</li>
+                            <li>于是创建了网站的第一版模型</li>
+                        </ul>
+                    </div>
+
+                    <div class="update-item">
+                        <h4>后续更新 请关注本网站</h4>
+                    </div>
+                </div>
+            `;
+
+            // 打开面板
+            function openPanel(content) {
+                panelContent.innerHTML = content;
+                customPanel.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            // 关闭面板
+            function closePanelFunc() {
+                customPanel.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            // 事件监听
+            projectsBtn.addEventListener('click', () => openPanel(projectsContent));
+            updateBtn.addEventListener('click', () => openPanel(updateContent));
+            closePanel.addEventListener('click', closePanelFunc);
+        }
+
+        /**
+         * 初始化聊天功能
+         */
+        function initChat() {
+            // 本地问答知识库
+            const knowledgeBase = {
+                "help": "我的词汇量有:你好 你是谁 你会做什么 谢谢 再见 1+1 对不起 厉害",
+                "你好": "你好！有什么我可以帮助你的吗？",
+                "fuck you": "为什么辱骂我 你必须给我道歉",
+                "对不起": "没关系",
+                "1": "你好/.",
+                "厉害": "我也感觉我很厉害",
+                "你是谁": "我是瓶盖！！",
+                "你会做什么": "我可以回答预设的问题，比如：'你好'、'你是谁'、'你会做什么'等",
+                "谢谢": "不客气，很高兴能帮到你！",
+                "再见": "再见 Have a nice day！",
+                "1+1": "2 这种低智问题不要问我"
+            };
+
+            const sendButton = document.getElementById('sendButton');
+            const userInput = document.getElementById('userInput');
+            const chatMessages = document.getElementById('chatMessages');
+
+            // 发送按钮点击事件
+            sendButton.addEventListener('click', respondToQuestion);
+
+            // 输入框回车事件
+            userInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    respondToQuestion();
+                }
+            });
+
+            // 添加消息到聊天框
+            function addMessage(text, isUser) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+                messageDiv.textContent = text;
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // 响应问题
+            function respondToQuestion() {
+                const question = userInput.value.trim();
+                if (!question) return;
+
+                // 添加用户消息
+                addMessage(question, true);
+                userInput.value = '';
+
+                // 查找匹配的回答
+                const answer = knowledgeBase[question] ||
+                    "抱歉，我不明白这个问题。你可以试试问：'你好'、'你是谁'、'谢谢'、'再见'输入help查看我的基本词汇量";
+
+                // 模拟AI思考时间后回复
+                setTimeout(() => {
+                    addMessage(answer, false);
+                }, 500);
+            }
+        }
+
+        /**
+         * 计算并更新年龄
+         */
+        function updateAgeDisplay() {
+            function calculateAge(birthDateString) {
+                const birthDate = new Date(birthDateString.replace(/\//g, '-'));
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                return age;
+            }
+
+            // 更新年龄显示
+            const ageElements = document.querySelectorAll('li');
+            ageElements.forEach(el => {
+                if (el.textContent.includes('年龄')) {
+                    el.textContent = el.textContent.replace(/\d+/, calculateAge('2011/9/6'));
+                }
+            });
+
+            // 更新年份显示
+            const yearElements = document.querySelectorAll('h6');
+            yearElements.forEach(el => {
+                if (el.textContent.includes('2025')) {
+                    el.textContent = el.textContent.replace('2025', new Date().getFullYear());
+                }
+            });
+        }
+    </script>
+<script>
+        // å¹´é¾è®¡ç®
+        function calculateAge(birthDateString) {
+            const birthDate = new Date(birthDateString.replace(/\//g, '-')); // å¼å®¹ Safari
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+        const ageSpan = document.getElementById('age');
+        if (ageSpan) {
+            ageSpan.textContent = calculateAge('2008/06/18');
+        }
+
+        // å¨æå¹´ä»½
+        const currentYearSpan = document.getElementById('currentYear');
+        if (currentYearSpan) {
+            currentYearSpan.textContent = new Date().getFullYear();
+        }
+
+        // å¡çæ¬æµ®ææ (å¯éï¼ä»æ¡é¢ç«¯)
+        const profileCard = document.querySelector('.profile-card');
+        if (profileCard && !window.matchMedia("(max-width: 768px)").matches) {
+            profileCard.addEventListener('mousemove', (e) => {
+                const rect = profileCard.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                const rotateX = -(y / rect.height * 6);
+                const rotateY = (x / rect.width * 6);
+                profileCard.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.01)`;
+                profileCard.style.transition = 'transform 0.05s linear';
+            });
+            profileCard.addEventListener('mouseleave', () => {
+                profileCard.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale(1)';
+                profileCard.style.transition = 'transform 0.4s ease-out';
+            });
+        }
+        (async () => {
+            try {
+                const response = await fetch('https://cloud.jsms2.cn/api/image/image.php?mode=json&type=ua');
+                const data = await response.json();
+                if (data.success && data.url) {
+                    const imgUrl = data.url; // è§£ç  \/ ä¸º /
+                    document.body.style.backgroundImage = `url("${imgUrl}")`;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundPosition = 'center';
+                    document.body.style.backgroundAttachment = 'fixed';
+                } else {
+                    console.warn('å¾çå è½½å¤±è´¥ï¼', data.msg || 'æªç¥éè¯¯');
+                }
+            } catch (err) {
+                console.error('èæ¯å¾è·åå¤±è´¥ï¼', err);
+            }
+        })();
+        // èªå®ä¹ Animate.css å»¶è¿å è½½
+        document.addEventListener('DOMContentLoaded', () => {
+            const animatedElements = document.querySelectorAll('[data-animate-delay-custom]');
+            animatedElements.forEach(el => {
+                el.style.animationDelay = el.dataset.animateDelayCustom;
+            });
+            window.scrollTo(0, 0);
+        });
+    </script>
+</body>
+</html>
